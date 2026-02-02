@@ -18,8 +18,8 @@ class Keypad extends StatelessWidget {
       '4', '5', '6', '×',
       '1', '2', '3', '−',
       '0', '.', '=', '+',
-      'sin', 'cos', 'tan', 'log',
-      'ln', '^', '√', '%',
+      'sin(', 'cos(', 'tan(', 'log(',
+      'ln(', '^', '√', '%',
     ];
 
     return GridView.builder(

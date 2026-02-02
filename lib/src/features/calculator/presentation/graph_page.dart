@@ -1,6 +1,8 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:math_expressions/math_expressions.dart';
+import '../../state/calculator_logic.dart';
 
 class GraphPage extends StatefulWidget {
   const GraphPage({super.key});
@@ -12,14 +14,18 @@ class GraphPage extends StatefulWidget {
 class _GraphPageState extends State<GraphPage> {
   final TextEditingController _controller = TextEditingController();
   List<FlSpot> _dataPoints = [];
+  final CalculatorLogic _calculatorLogic = CalculatorLogic();
 
   void _generateGraph(String expression) {
     final parser = Parser();
     final context = ContextModel();
+    _calculatorLogic.bindDegreeFunctions(context); // Use public method
     final List<FlSpot> points = [];
 
     try {
-      final exp = parser.parse(expression);
+      final normalizedExpr = _calculatorLogic.normalize(expression); // Normalize input
+      final exp = parser.parse(normalizedExpr);
+
       for (double x = -10; x <= 10; x += 0.1) {
         context.bindVariable(Variable('x'), Number(x));
         final y = exp.evaluate(EvaluationType.REAL, context);
@@ -84,7 +90,7 @@ class _GraphPageState extends State<GraphPage> {
                     LineChartBarData(
                       spots: _dataPoints,
                       isCurved: true,
-                      colors: [Colors.blue],
+                      color: Colors.blue, // Updated to use single color
                       barWidth: 3,
                       isStrokeCapRound: true,
                       belowBarData: BarAreaData(show: false),

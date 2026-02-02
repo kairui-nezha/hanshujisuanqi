@@ -62,7 +62,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: calculator-windows-zip
-          path: build/calculator-windows.zip
+          path: calculator-windows.zip  # <--- 修复点1：去掉 build/
 
   release:
     name: Create GitHub Release
@@ -74,11 +74,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: calculator-android-apk
+          path: .  # <--- 修复点2：必须加这行，下载到根目录
 
       - name: Download Windows Artifact
         uses: actions/download-artifact@v3
         with:
           name: calculator-windows-zip
+          path: .  # <--- 修复点2：必须加这行，下载到根目录
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
