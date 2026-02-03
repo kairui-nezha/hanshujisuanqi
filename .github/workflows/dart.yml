@@ -1,0 +1,92 @@
+name: Flutter Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android APK
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk calculator-android.apk
+
+      - name: Upload Android Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-android-apk
+          path: calculator-android.apk
+
+  build-windows:
+    name: Build Windows App
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Windows App
+        run: flutter build windows --release
+
+      - name: Package Windows Build
+        run: |
+          cd build/windows/runner/Release
+          tar -czf ../../../../calculator-windows.zip .
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-windows-zip
+          path: calculator-windows.zip  # <--- 修复点1：去掉 build/
+
+  release:
+    name: Create GitHub Release
+    needs: [build-android, build-windows]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Android Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: calculator-android-apk
+          path: .  # <--- 修复点2：必须加这行，下载到根目录
+
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: calculator-windows-zip
+          path: .  # <--- 修复点2：必须加这行，下载到根目录
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            calculator-android.apk
+            calculator-windows.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
