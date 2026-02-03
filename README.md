@@ -1,6 +1,10 @@
-# Made with love by Gemini3 Pro GPT-4o GPT-5.2-Codex
+# 在使用此项目前，请注意以下几点
+## 1.This project made with love by Gemini3 Pro GPT-4o GPT-5.2-Codex
+##  2.本项目不保证代码质量，可能会出现一些奇奇怪怪的bug。
 
-#  ~~感谢Google和OpenAI对本项目的大力支持~~
+
+##  ~~感谢国家电网/Intel/Amd/Google/OpenAI为本项目提供大力支持~~
+
 
 # 🧮 Flutter 跨平台科学函数计算器
 
@@ -62,3 +66,4 @@
    ```bash
    git clone [https://github.com/kairui-nezha/hanshujisuanqi.git](https://github.com/kairui-nezha/hanshujisuanqi.git)
    cd scientific_calculator
+
