@@ -9,11 +9,9 @@ jobs:
   build-android:
     name: Build Android APK
     runs-on: ubuntu-latest
-    
-    # 🔥 核心修改：指定在“函数计算器”子目录里运行命令
-    defaults:
-      run:
-        working-directory: ./lib
+
+    # ❌ 删除了 defaults: run: working-directory... (因为代码就在根目录)
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,24 +28,21 @@ jobs:
         run: flutter build apk --release
 
       - name: Rename APK
-        # 注意：因为我们在子目录里，所以要把文件移动到上一级 (../) 也就是仓库根目录
-        run: mv build/app/outputs/flutter-apk/app-release.apk ../calculator-android.apk
+        # ✅ 修正路径：不需要 ../ 了，因为就在当前目录构建
+        run: mv build/app/outputs/flutter-apk/app-release.apk calculator-android.apk
 
       - name: Upload Android Artifact
         uses: actions/upload-artifact@v4
         with:
           name: calculator-android-apk
-          path: calculator-android.apk # 上传根目录下的文件
+          path: calculator-android.apk
           compression-level: 0
 
   build-windows:
     name: Build Windows App
     runs-on: windows-latest
-    
-    # 🔥 核心修改：Windows 也要指定子目录
-    defaults:
-      run:
-        working-directory: ./函数计算器
+
+    # ❌ 删除了 defaults: run: working-directory...
 
     steps:
       - name: Checkout code
@@ -67,16 +62,14 @@ jobs:
       - name: Package Windows Build
         run: |
           cd build/windows/runner/Release
-          # 这里的路径更复杂了，因为我们在子目录的子目录里
-          # 如果 working-directory 生效，这里的相对路径可能需要调整
-          # 最稳妥的方式是用绝对路径或保持原样尝试
-          tar -czf ../../../../../calculator-windows.zip . 
+          # ✅ 修正路径：回退 4 层即可回到根目录 (build -> windows -> runner -> Release)
+          tar -czf ../../../../calculator-windows.zip .
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
           name: calculator-windows-zip
-          path: calculator-windows.zip # 假设 zip 被打包到了根目录
+          path: calculator-windows.zip
           compression-level: 0
 
   release:
