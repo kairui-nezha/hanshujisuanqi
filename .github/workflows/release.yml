@@ -12,12 +12,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
+          channel: 'stable' # 关键修复：使用 channel 指定稳定版，不要用 flutter-version
+          # flutter-version: 'stable' <--- 这一行导致了报错，已删除
 
       - name: Install dependencies
         run: flutter pub get
@@ -33,6 +34,7 @@ jobs:
         with:
           name: calculator-android-apk
           path: calculator-android.apk
+          compression-level: 0
 
   build-windows:
     name: Build Windows App
@@ -40,12 +42,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
+          channel: 'stable' # 关键修复：同上
 
       - name: Install dependencies
         run: flutter pub get
@@ -62,7 +64,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: calculator-windows-zip
-          path: calculator-windows.zip  # <--- 修复点1：去掉 build/
+          path: calculator-windows.zip
+          compression-level: 0
 
   release:
     name: Create GitHub Release
@@ -74,13 +77,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: calculator-android-apk
-          path: .  # <--- 修复点2：必须加这行，下载到根目录
+          path: .
 
       - name: Download Windows Artifact
         uses: actions/download-artifact@v4
         with:
           name: calculator-windows-zip
-          path: .  # <--- 修复点2：必须加这行，下载到根目录
+          path: .
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
