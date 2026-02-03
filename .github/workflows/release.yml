@@ -1,9 +1,6 @@
 name: Flutter Release
-
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build-android:
