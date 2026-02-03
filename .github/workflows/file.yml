@@ -1,0 +1,44 @@
+name: Fix Missing Build Files
+
+# 这个脚本只能手动触发，或者在你修改它时触发
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }} # 使用令牌以便能推回代码
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Generate build files
+        run: |
+          # 强制重新生成 android 和 windows 文件夹
+          flutter create . --platforms=android,windows --org com.example
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 强制添加所有新生成的文件
+          git add android/ windows/ -f
+          
+          # 只有当有变动时才提交
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-fix: Generate missing platform build files"
+            git push
+          fi
