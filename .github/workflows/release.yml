@@ -71,19 +71,19 @@ jobs:
 
     steps:
       - name: Download Android Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: calculator-android-apk
           path: .  # <--- 修复点2：必须加这行，下载到根目录
 
       - name: Download Windows Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: calculator-windows-zip
           path: .  # <--- 修复点2：必须加这行，下载到根目录
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             calculator-android.apk
